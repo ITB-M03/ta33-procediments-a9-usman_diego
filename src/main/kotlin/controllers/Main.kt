@@ -1,4 +1,4 @@
-package org.example.controllers
+package controllers
 
 import java.util.*
 
@@ -112,3 +112,105 @@ fun seleccionarNumeroBitllets(scanner: Scanner): Int {
 }
 
 
+/**
+ * Calcula el preu total de la compra.
+ *
+ * @param tipusBitllet El tipus de bitllet seleccionat.
+ * @param numZones El nombre de zones seleccionades.
+ * @param numBitllets El nombre de bitllets seleccionats.
+ * @return El preu total de la compra.
+ * @author Usman y Diego
+ * @since 14/12/2024
+ */
+fun calcularPreuTotal(tipusBitllet: Int, numZones: Int, numBitllets: Int): Double {
+    val preusBitllets = mapOf(
+        1 to 2.40,
+        2 to 11.35,
+        3 to 40.00,
+        4 to 10.00,
+        5 to 80.00
+    )
+    val preuPerBitllet = preusBitllets[tipusBitllet] ?: error("Tipus de bitllet no vàlid")
+    val preuSenseCanviZones = preuPerBitllet * numBitllets
+    return aplicarIncrementZones(preuSenseCanviZones, numZones)
+}
+
+/**
+ * Aplica un increment al preu segons el nombre de zones seleccionades.
+ *
+ * @param preu El preu base sense increments.
+ * @param numZones El nombre de zones seleccionades.
+ * @return El preu total amb l'increment aplicat.
+ * @author Usman y Diego
+ * @since 14/12/2024
+ */
+fun aplicarIncrementZones(preu: Double, numZones: Int): Double {
+    return when (numZones) {
+        1 -> preu
+        2 -> preu * 1.3125
+        3 -> preu * 1.8443
+        else -> error("Nombre de zones no vàlid")
+    }
+}
+
+/**
+ * Finalitza la compra després d'introduir els diners i imprimir el tiquet.
+ *
+ * @param preuTotal El preu total de la compra.
+ * @param scanner L'escàner per llegir l'entrada de l'usuari.
+ * @author Usman y Diego
+ * @since 14/12/2024
+ */
+fun finalitzarCompra(preuTotal: Double, scanner: Scanner) {
+    val dinersIngresats = gestionarPagament(preuTotal, scanner)
+    if (dinersIngresats >= preuTotal) {
+        println("Bitllets comprats!")
+        println("Canvi a tornar: ${dinersIngresats - preuTotal} €")
+        imprimirTiquet(scanner)
+    } else {
+        println("Import insuficient. La compra s'ha cancel·lat.")
+    }
+}
+
+/**
+ * Gestiona el pagament del bitllet.
+ *
+ * @param preuTotal El preu total a pagar.
+ * @param scanner L'escàner per llegir l'entrada de l'usuari.
+ * @return El total de diners introduïts.
+ * @author Usman y Diego
+ * @since 14/12/2024
+ */
+fun gestionarPagament(preuTotal: Double, scanner: Scanner): Double {
+    println("El preu total és: $preuTotal €")
+    print("Introdueix els diners: ")
+    var dinersIngresats = 0.0
+
+    while (dinersIngresats < preuTotal) {
+        if (scanner.hasNextDouble()) {
+            dinersIngresats += scanner.nextDouble()
+            if (dinersIngresats < preuTotal) {
+                println("Import insuficient. Falten ${preuTotal - dinersIngresats} €")
+            }
+        } else {
+            scanner.next() // Descarta l'entrada no vàlida
+            println("Entrada no vàlida. Introdueix un número.")
+        }
+    }
+    return dinersIngresats
+}
+
+/**
+ * Pregunta a l'usuari si vol un tiquet i actua segons la resposta.
+ *
+ * @param scanner L'escàner per llegir l'entrada de l'usuari.
+ * @author Usman y Diego
+ * @since 14/12/2024
+ */
+fun imprimirTiquet(scanner: Scanner) {
+    print("Vols un tiquet? (Si/No): ")
+    val resposta = scanner.next().lowercase()
+    if (resposta == "si") {
+        println("Imprimint el tiquet...")
+    }
+}
