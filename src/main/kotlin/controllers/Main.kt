@@ -111,7 +111,6 @@ fun seleccionarNumeroBitllets(scanner: Scanner): Int {
     return if (scanner.hasNextInt()) scanner.nextInt() else error("Entrada no vàlida")
 }
 
-
 /**
  * Calcula el preu total de la compra.
  *
